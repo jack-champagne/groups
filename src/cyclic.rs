@@ -61,7 +61,7 @@ impl<const SIZE: usize> Iterator for Cyclic<SIZE> {
     }
 }
 
-impl<const SIZE: usize> Group for Cyclic<SIZE> {
+impl<'a, const SIZE: usize> Group for Cyclic<SIZE> {
     /// Returns an element of the cyclic group of order SIZE that is the result of the
     /// binary operation between `&self` and `other`
     ///

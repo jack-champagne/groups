@@ -8,6 +8,9 @@
 pub mod cyclic;
 pub mod permutation;
 
+use cyclic::Cyclic;
+use permutation::Permutation;
+
 /// Minimal interface for an algebraic group
 ///
 /// A group is a set S and a binary operator (*) such that:
@@ -20,9 +23,19 @@ pub mod permutation;
 /// For associativity, it _should_ checked by a unit test over all elements in the group.
 ///
 pub trait Group {
-    fn op(&self, other: &Self) -> Self;
+    fn op(&self, other: &Self>) -> Self;
 
     fn inv(&self) -> Self;
+}
 
-    fn identity() -> Self;
+pub struct DirectProduct {
+    components: ,
+}
+
+impl Group for DirectProduct {
+    fn op(&self, other: &Self) -> Self {}
+
+    fn inv(&self) -> Self {
+        todo!()
+    }
 }

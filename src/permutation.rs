@@ -128,7 +128,7 @@ impl<const SIZE: usize> Permutation<SIZE> {
 }
 
 // Group impl
-impl<const SIZE: usize> Group for Permutation<SIZE> {
+impl<'a, const SIZE: usize> Group for Permutation<SIZE> {
     /// Returns a permutation on SIZE elements that is the result  of the
     /// composition operation between `&self` and `other`
     ///
