@@ -8,8 +8,13 @@
 //! so future symmetry-breaking puzzles (which only form semigroups) slot in
 //! without reshuffling the type hierarchy. v1 ships only `Group`-level impls.
 
+pub mod bsgs;
 pub mod cyclic;
+pub mod generators;
 pub mod permutation;
+pub mod product;
+pub mod schreier_sims;
+pub mod word;
 
 /// A set with a closed binary operation. No other axioms.
 ///
@@ -81,6 +86,9 @@ pub trait Enumerable: Group {
 
 pub mod prelude {
     pub use super::cyclic::Cyclic;
+    pub use super::generators::GeneratingSet;
     pub use super::permutation::Permutation;
+    pub use super::product::{DirectProduct, SemidirectProduct, WreathProduct};
+    pub use super::word::Word;
     pub use super::{Action, Enumerable, Group, Magma, Monoid, Semigroup};
 }
