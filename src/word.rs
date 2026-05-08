@@ -115,6 +115,21 @@ impl Word {
         }
         self.indices = stack;
     }
+
+    /// Inverse word for paired-inverse generating sets (those built via
+    /// [`GeneratingSet::with_inverses`]). Reverses the index sequence and
+    /// XOR-toggles the low bit of each — exploiting that paired inverses
+    /// sit at consecutive even/odd indices.
+    ///
+    /// Cheaper than [`Word::inv`] (no per-index linear search) but requires
+    /// the paired-inverse layout. Panics if any index is out of range; UB
+    /// only in the sense that the resulting word is meaningful only
+    /// against the same paired set.
+    pub fn inv_paired(&self) -> Word {
+        Word {
+            indices: self.indices.iter().rev().map(|i| i ^ 1).collect(),
+        }
+    }
 }
 
 impl IntoIterator for Word {

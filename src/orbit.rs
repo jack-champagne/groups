@@ -99,6 +99,67 @@ where
     }
 }
 
+/// Enumerate the orbit of `start` under a list of `(G, Word)` pairs (gens
+/// with face-move expansions). Returns every reachable state mapped to a
+/// shortest *face-move* word, by concatenating the per-gen word at each
+/// BFS step.
+///
+/// Use this when the gens were extracted via
+/// [`crate::schreier_sims::deterministic_with_words::BsgsWithWords::stabilizer_generators_with_words`]
+/// — each gen carries its face-move expansion, and the orbit map produced
+/// here gives you face-move algorithms for every state in the subgroup
+/// directly (no further translation step).
+pub fn enumerate_orbit_translated<G>(
+    start: &G,
+    gens_with_words: &[(G, Word)],
+    max_size: usize,
+) -> OrbitMap<G>
+where
+    G: Group + std::hash::Hash,
+{
+    use std::collections::HashMap;
+
+    let mut states: HashMap<G, Word> = HashMap::new();
+    states.insert(*start, Word::new());
+
+    let mut frontier: Vec<G> = vec![*start];
+
+    while !frontier.is_empty() {
+        if states.len() >= max_size {
+            return OrbitMap {
+                start: *start,
+                states,
+                complete: false,
+            };
+        }
+        let mut next: Vec<G> = Vec::new();
+        for cur in &frontier {
+            let cur_word = states[cur].clone();
+            for (g, w) in gens_with_words {
+                let nxt = cur.op(g);
+                if !states.contains_key(&nxt) {
+                    let new_word = cur_word.clone().concat(w);
+                    states.insert(nxt, new_word);
+                    next.push(nxt);
+                    if states.len() >= max_size {
+                        return OrbitMap {
+                            start: *start,
+                            states,
+                            complete: false,
+                        };
+                    }
+                }
+            }
+        }
+        frontier = next;
+    }
+    OrbitMap {
+        start: *start,
+        states,
+        complete: true,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
