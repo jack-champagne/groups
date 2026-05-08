@@ -87,6 +87,29 @@ where
         }
     }
 
+    /// Returns a generating set for the subgroup `G_level` stabilizing the
+    /// first `level` base points. This is the standard stabilizer-chain
+    /// quotient: the elements of `G` that pointwise fix `base[0..level]`.
+    ///
+    /// - `level = 0` returns generators of all of `G` (== the user's input
+    ///   generators, possibly augmented with Schreier residues).
+    /// - `level = base.len()` returns no generators (the trivial subgroup).
+    /// - `level = k` for `0 < k < base.len()` returns a generating set for
+    ///   the level-`k` stabilizer.
+    ///
+    /// Use this to extract subgroups by stabilizer chain — e.g., for the 3×3
+    /// cube with base ordered `[F2L stickers, LL stickers]`, calling this at
+    /// `level = 12` yields generators of the last-layer subgroup
+    /// (order 62,208).
+    pub fn stabilizer_generators(&self, level: usize) -> Vec<G> {
+        let mut out = Vec::new();
+        let start = level.min(self.levels.len());
+        for lvl in &self.levels[start..] {
+            out.extend(lvl.strong_gens.iter().copied());
+        }
+        out
+    }
+
     /// `|G|` — the product of the orbit sizes at each level.
     pub fn order(&self) -> u128 {
         self.levels

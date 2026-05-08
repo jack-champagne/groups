@@ -11,6 +11,7 @@
 pub mod bsgs;
 pub mod cyclic;
 pub mod generators;
+pub mod orbit;
 pub mod partial_state;
 pub mod permutation;
 pub mod product;
