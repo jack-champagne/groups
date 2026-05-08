@@ -127,10 +127,10 @@ where
 
     // Build initial orbits.
     for i in 0..state.bsgs.levels.len() {
-        extend_orbit(&mut state, i);
+        extend_orbit(&mut state, i, gens);
     }
 
-    sift_schreier(&mut state);
+    sift_schreier(&mut state, gens);
     state
 }
 
@@ -148,8 +148,10 @@ where
     None
 }
 
-fn sift_schreier<G, const N: usize>(state: &mut BsgsWithWords<G, N>)
-where
+fn sift_schreier<G, const N: usize>(
+    state: &mut BsgsWithWords<G, N>,
+    gens: &GeneratingSet<G>,
+) where
     G: PermutationLike<N>,
 {
     let mut changed = true;
@@ -172,7 +174,7 @@ where
                 for (s, w_s) in &union {
                     let beta_s = s.apply_to(beta as u16);
                     let Some(u_beta_s) = state.bsgs.levels[i].transversal[beta_s as usize] else {
-                        extend_orbit(state, i);
+                        extend_orbit(state, i, gens);
                         changed = true;
                         continue;
                     };
@@ -182,10 +184,13 @@ where
 
                     let schreier = u_beta.op(s).op(&u_beta_s.inv());
                     // Word: w_beta ++ w_s ++ inv(w_beta_s)
-                    let schreier_word = w_beta
+                    let mut schreier_word = w_beta
                         .clone()
                         .concat(w_s)
                         .concat(&w_beta_s.inv_paired());
+                    // Free-reduce immediately to keep word lengths from
+                    // ballooning over deep chains.
+                    schreier_word.reduce(gens);
 
                     // Sift through deeper levels.
                     let mut residue = schreier;
@@ -200,6 +205,7 @@ where
                                     .expect("populated in lockstep with transversal");
                                 residue = residue.op(&u.inv());
                                 residue_word = residue_word.concat(&u_word.inv_paired());
+                                residue_word.reduce(gens);
                             }
                             None => {
                                 sifted_to_level = Some(j);
@@ -230,7 +236,7 @@ where
                     };
                     state.bsgs.levels[target].strong_gens.push(residue);
                     state.strong_gen_words[target].push(residue_word);
-                    extend_orbit(state, target);
+                    extend_orbit(state, target, gens);
                     changed = true;
                 }
             }
@@ -238,8 +244,11 @@ where
     }
 }
 
-fn extend_orbit<G, const N: usize>(state: &mut BsgsWithWords<G, N>, level: usize)
-where
+fn extend_orbit<G, const N: usize>(
+    state: &mut BsgsWithWords<G, N>,
+    level: usize,
+    gens: &GeneratingSet<G>,
+) where
     G: PermutationLike<N>,
 {
     use crate::Monoid;
@@ -265,7 +274,9 @@ where
             let img = s.apply_to(beta);
             if transversal[img as usize].is_none() {
                 transversal[img as usize] = Some(u_beta.op(s));
-                twords[img as usize] = Some(w_beta.clone().concat(w_s));
+                let mut new_word = w_beta.clone().concat(w_s);
+                new_word.reduce(gens);
+                twords[img as usize] = Some(new_word);
                 frontier.push(img);
             }
         }
