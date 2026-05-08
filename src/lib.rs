@@ -58,6 +58,16 @@ pub trait Group: Monoid {
     }
 }
 
+/// Blanket impl: every group acts on itself by right multiplication
+/// (`x.act(g) = x · g` in our left-to-right op convention). This is the
+/// regular right action — every group naturally has it.
+impl<G: Group> Action<G> for G {
+    #[inline]
+    fn act(&self, g: &G) -> Self {
+        self.op(g)
+    }
+}
+
 /// A set on which a monoid `G` acts.
 ///
 /// The `act` method lives on the receiver (state) so group types stay free of

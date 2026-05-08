@@ -1,3 +1,6 @@
+[workspace]
+members = [".", "twisty-puzzles"]
+
 [package]
 name = "groups"
 version = "0.1.0"
