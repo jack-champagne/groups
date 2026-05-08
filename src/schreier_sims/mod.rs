@@ -16,3 +16,5 @@
 //! [Sims 1970]: https://en.wikipedia.org/wiki/Schreier%E2%80%93Sims_algorithm
 
 pub mod deterministic;
+pub mod las_vegas;
+pub mod monte_carlo;

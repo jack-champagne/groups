@@ -11,9 +11,11 @@
 pub mod bsgs;
 pub mod cyclic;
 pub mod generators;
+pub mod partial_state;
 pub mod permutation;
 pub mod product;
 pub mod schreier_sims;
+pub mod solver;
 pub mod word;
 
 /// A set with a closed binary operation. No other axioms.
