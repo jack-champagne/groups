@@ -19,7 +19,7 @@
 //! projects the search onto the constraint set.
 
 use crate::bsgs::{Bsgs, PermutationLike};
-use crate::Group;
+// Group reachable through PermutationLike supertrait
 
 /// Per-slot constraint.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]

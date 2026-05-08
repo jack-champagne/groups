@@ -78,7 +78,7 @@ where
                             }
                         }
                     }
-                    use crate::Monoid;
+
                     if residue == G::identity() {
                         continue;
                     }
@@ -107,7 +107,7 @@ fn extend_orbit<G, const N: usize>(bsgs: &mut Bsgs<G, N>, level: usize)
 where
     G: PermutationLike<N>,
 {
-    use crate::Monoid;
+
     let base_point = bsgs.levels[level].base_point;
     let mut transversal: Vec<Option<G>> = (0..N).map(|_| None).collect();
     transversal[base_point as usize] = Some(G::identity());
