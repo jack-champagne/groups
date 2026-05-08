@@ -343,6 +343,34 @@ pub fn find_algorithm(
     Some(word_to_algorithm(&word))
 }
 
+/// Like [`find_algorithm`] but with a configurable BFS depth bound. Lower
+/// bounds let callers bail out fast on hard constraint sets.
+pub fn find_algorithm_max_depth(
+    cube_bsgs: &CubeBsgs,
+    start: &Cube3x3State,
+    query: &CubeQuery,
+    max_depth: u32,
+) -> Option<Algorithm> {
+    let start_perm = core::to_sticker_perm(start);
+    let start_inv = groups::Group::inv(&start_perm);
+    let raw_partial = query.to_sticker_partial();
+
+    let mut shifted = [Constraint::Wildcard; N_STICKERS];
+    for (i, c) in raw_partial.constraints.iter().enumerate() {
+        if let Constraint::MustEqual(v) = c {
+            use groups::bsgs::PermutationLike;
+            let new_v = start_inv.apply_to(*v);
+            shifted[i] = Constraint::MustEqual(new_v);
+        }
+    }
+    let partial: PartialState<N_STICKERS> = PartialState { constraints: shifted };
+
+    let word = cube_bsgs
+        .bsgs
+        .coset_member_word_max_depth(&cube_bsgs.gens, &partial, max_depth)?;
+    Some(word_to_algorithm(&word))
+}
+
 /// Where can the cubie at corner slot `slot` end up under the QTM face-move
 /// group? Returns the orbit as a list of slots reachable from `slot`.
 pub fn corner_orbit(cube_bsgs: &CubeBsgs, slot: u8) -> Vec<u8> {

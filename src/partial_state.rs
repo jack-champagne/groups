@@ -137,6 +137,22 @@ where
     where
         G: std::hash::Hash,
     {
+        self.coset_member_word_max_depth(gens, partial, 30)
+    }
+
+    /// Like [`coset_member_word`] but with a configurable depth bound on the
+    /// underlying BFS. Lower bounds let callers bail out fast on hard
+    /// constraint sets (the BFS visits ~`branching^depth` states at the
+    /// extreme).
+    pub fn coset_member_word_max_depth(
+        &self,
+        gens: &crate::generators::GeneratingSet<G>,
+        partial: &PartialState<N>,
+        max_depth: u32,
+    ) -> Option<crate::word::Word>
+    where
+        G: std::hash::Hash,
+    {
         use crate::word::Word;
         use crate::Monoid;
         use std::collections::HashMap;
@@ -146,12 +162,8 @@ where
             return Some(Word::new());
         }
 
-        // Bounded BFS over the Cayley graph filtered by membership in G
-        // (every state we consider is reachable via the given gens, so this
-        // is automatic) and the constraint pattern.
         let mut prev: HashMap<G, (G, u8)> = HashMap::new();
         let mut frontier: Vec<G> = vec![id];
-        let max_depth: u32 = 30;
         for _ in 0..max_depth {
             let mut next: Vec<G> = Vec::new();
             for &cur in &frontier {
