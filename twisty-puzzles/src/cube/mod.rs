@@ -17,6 +17,7 @@
 pub mod cube_2x2;
 pub mod cube_3x3;
 pub mod cube_3x3_iface;
+pub mod cube_3x3_render;
 pub mod cube_n;
 
 pub use cube_2x2::Cube2x2State;
