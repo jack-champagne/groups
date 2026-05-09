@@ -47,39 +47,20 @@ fn main() {
     }
     print_edge_orientations(&edges);
 
-    println!("\nInvariants (must all be ✓ for any reachable cube state):");
+    println!("\nObservable invariants for this state:");
     let twist_sum: u32 = (0..8).map(|i| corners.fibers[i].index() as u32).sum::<u32>() % 3;
     let flip_sum: u32 = (0..12).map(|j| edges.fibers[j].index() as u32).sum::<u32>() % 2;
     let cp = corners.perm.parity();
     let ep = edges.perm.parity();
-    println!(
-        "  Corner twist sum mod 3:    {twist_sum}  {}",
-        if twist_sum == 0 { "✓" } else { "✗" }
-    );
-    println!(
-        "  Edge flip sum mod 2:       {flip_sum}  {}",
-        if flip_sum == 0 { "✓" } else { "✗" }
-    );
-    println!(
-        "  Corner perm parity:        {cp}"
-    );
-    println!(
-        "  Edge perm parity:          {ep}"
-    );
-    println!(
-        "  Parity match (cp == ep):   {}  {}",
-        cp == ep,
-        if cp == ep { "✓" } else { "✗" }
-    );
+    println!("  Corner twist sum mod 3:  {twist_sum}");
+    println!("  Edge flip sum mod 2:     {flip_sum}");
+    println!("  Corner perm parity:      {cp}");
+    println!("  Edge perm parity:        {ep}");
 
-    println!(
-        "\nState is {}.",
-        if twist_sum == 0 && flip_sum == 0 && cp == ep {
-            "a valid cube position"
-        } else {
-            "INVALID — could not arise from face moves"
-        }
-    );
+    // For algorithm-derived states these are forced (twist=0, flip=0,
+    // cp == ep) by construction. Worth showing for understanding the
+    // structure, but not a validity check — every algorithm output is
+    // automatically valid.
 }
 
 const CORNER_NAMES: [&str; 8] = ["URF", "UFL", "ULB", "UBR", "DFR", "DLF", "DBL", "DRB"];

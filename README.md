@@ -37,27 +37,29 @@ Prints the corner/edge cycle decomposition, twist sums, parity, and
 invariant checks for the resulting state. Useful for understanding what
 any given algorithm "does" mathematically.
 
-### Pinning queries — the headline use case
+### Algorithm exploration — the headline use case
 
 ```bash
 cargo run --release -p twisty-puzzles --example cube_3x3_queries
 ```
 
-Builds the BSGS for the cube, validates `|G| = 43,252,003,274,489,856,000`,
-then runs constraint-based queries: "find moves that put URF in slot 4",
-"pin URF + UBR + UF in place", "what slots can corner 0 reach under just
-R, U?". All sub-millisecond after the ~15 ms BSGS construction.
+Builds the BSGS for the cube and runs *constraint-based algorithm
+exploration*: "find a short alg that moves URF to slot 4 while keeping
+UFL/ULB/UBR pinned," "what slots can corner 0 reach under just R, U?",
+"⟨R, F⟩ never touches the UB edge — verify." This is what the
+partial-state + orbit machinery is *for* — not solving (which needs
+Thistlethwaite/Kociemba), but inventory of "what's reachable, what's
+invariant, what short alg achieves this constraint."
 
-### Solve and progressive pinning
+### End-to-end solve (short scrambles)
 
 ```bash
 cargo run --release -p twisty-puzzles --example cube_3x3_solve
 ```
 
-Applies a 4-move scramble, then solves it two ways: (1) end-to-end via
-full-state pin and `find_algorithm`, (2) progressively pinning cubies
-one at a time. Demonstrates how partial-state machinery enables
-incremental solving.
+Random short scramble + full-state-pin solve via `find_algorithm`. Works
+fine for ≤6-move scrambles; for the full 17–20 move random-scramble depth
+see the cliff in `cube_3x3_solve_bench`.
 
 ### Solve-time benchmark
 
